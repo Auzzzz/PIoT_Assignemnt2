@@ -8,8 +8,8 @@ class DatabaseUtil:
 
     def __init__(self, connection = None):
         if(connection == None):
-            connection = MySQLdb.connect(DatabaseUtil.HOST, DatabaseUtil.USER,
-                DatabaseUtil.PASSWORD, DatabaseUtil.DATABASE)
+            connection = MySQLdb.connect(DatabaseUtils.HOST, DatabaseUtils.USER,
+                DatabaseUtils.PASSWORD, DatabaseUtils.DATABASE)
         self.connection = connection
 
     def close(self):
@@ -21,27 +21,30 @@ class DatabaseUtil:
     def __exit__(self, type, value, traceback):
         self.close()
 
-    ##Create User and Car DB
-
-        def createUserTable(self):
-            with self.connection.cursor() as cursor:
-                cursor.execute("""
-                create table if not exists User (
-                    UserID int not null auto_incremnet,
-                    FirstName not null,
-                    LastName not null,
-                    constraint PK_User primary key (UserID)
-                ) """)
+    def createPersonTable(self):
+        with self.connection.cursor() as cursor:
+            cursor.execute("""
+                create table if not exists Person (
+                    PersonID int not null auto_increment,
+                    Name text not null,
+                    constraint PK_Person primary key (PersonID)
+                )""")
         self.connection.commit()
 
-        def insertUser(self, fname, lname):
-            with self.connection.cursor() as cursor:
-                cursor.execute("insert into User (FirstName, LastName)", (fname, lname,))
-            self.connection.commit()
+    def insertPerson(self, name):
+        with self.connection.cursor() as cursor:
+            cursor.execute("insert into Person (Name) values (%s)", (name,))
+        self.connection.commit()
 
-            return cursor.rowcount == 1
-        
-        def getPerson(self):
-            with self.connection.cursor() as cursor:
-                cursor.execute("select PersonID, Name from Person")
-                return cursor.fetchall()
+        return cursor.rowcount == 1
+
+    def getPeople(self):
+        with self.connection.cursor() as cursor:
+            cursor.execute("select PersonID, Name from Person")
+            return cursor.fetchall()
+
+    def deletePerson(self, personID):
+        with self.connection.cursor() as cursor:
+            # Note there is an intentionally placed bug here: != should be =
+            cursor.execute("delete from Person where PersonID != %s", (personID,))
+        self.connection.commit()
