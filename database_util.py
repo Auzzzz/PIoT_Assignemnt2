@@ -1,6 +1,6 @@
 import MySQLdb
 
-class DatabseUtil:
+class DatabaseUtil:
     HOST = "34.87.229.96"
     USER = "root"
     PASSWORD = "banana"
@@ -26,7 +26,7 @@ class DatabseUtil:
         def createUserTable(self):
             with self.connection.cursor() as cursor:
                 cursor.execute("""
-                create tbe if not exists User (
+                create table if not exists User (
                     UserID int not null auto_incremnet,
                     FirstName not null,
                     LastName not null,
